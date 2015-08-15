@@ -20,6 +20,20 @@ def luv(bot, trigger):
     bot.say("%s has increased %s's reputation score to %d." % (trigger.nick, target, rep))
 
 
+@module.commands('h8')
+@module.rate(3600)
+@module.example(".h8 johnnytwothumbs")
+def h8(bot, trigger):
+    if not trigger.group(3):
+        bot.reply("No user specified.")
+        return
+    target = trigger.group(3)
+    rep = bot.db.get_nick_value(target, 'rep_score') or 0
+    rep -= 1
+    bot.db.set_nick_value(target, 'rep_score', rep)
+    bot.say("%s has decreased %s's reputation score to %d." % (trigger.nick, target, rep))
+
+
 @module.commands('rep')
 @module.example(".rep johnnytwothumbs")
 def rep(bot, trigger):
