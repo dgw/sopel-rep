@@ -14,6 +14,9 @@ def luv(bot, trigger):
         bot.reply("No user specified.")
         return
     target = trigger.group(3)
+    if target == trigger.nick:
+        bot.reply("No narcissism allowed!")
+        return
     rep = bot.db.get_nick_value(target, 'rep_score') or 0
     rep += 1
     bot.db.set_nick_value(target, 'rep_score', rep)
@@ -28,6 +31,9 @@ def h8(bot, trigger):
         bot.reply("No user specified.")
         return
     target = trigger.group(3)
+    if target == trigger.nick:
+        bot.reply("Go to 4chan if you really hate yourself!")
+        return
     rep = bot.db.get_nick_value(target, 'rep_score') or 0
     rep -= 1
     bot.db.set_nick_value(target, 'rep_score', rep)
