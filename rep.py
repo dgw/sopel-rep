@@ -17,9 +17,7 @@ def luv(bot, trigger):
     if target == trigger.nick:
         bot.reply("No narcissism allowed!")
         return
-    rep = bot.db.get_nick_value(target, 'rep_score') or 0
-    rep += 1
-    bot.db.set_nick_value(target, 'rep_score', rep)
+    rep = mod_rep(bot, target, 1)
     bot.say("%s has increased %s's reputation score to %d." % (trigger.nick, target, rep))
 
 
@@ -34,9 +32,7 @@ def h8(bot, trigger):
     if target == trigger.nick:
         bot.reply("Go to 4chan if you really hate yourself!")
         return
-    rep = bot.db.get_nick_value(target, 'rep_score') or 0
-    rep -= 1
-    bot.db.set_nick_value(target, 'rep_score', rep)
+    rep = mod_rep(bot, target, -1)
     bot.say("%s has decreased %s's reputation score to %d." % (trigger.nick, target, rep))
 
 
@@ -47,8 +43,24 @@ def rep(bot, trigger):
         bot.reply("No user specified.")
         return
     target = trigger.group(3)
-    rep = bot.db.get_nick_value(target, 'rep_score')
+    rep = get_rep(bot, target)
     if not rep:
         bot.say("%s has no reputation score yet." % target)
         return
     bot.say("%s's current reputation score is %d." % (target, rep))
+
+
+# helpers
+def get_rep(bot, nick):
+    return bot.db.get_nick_value(nick, 'rep_score') or 0
+
+
+def set_rep(bot, nick, newrep):
+    bot.db.set_nick_value(nick, 'rep_score', newrep)
+
+
+def mod_rep(bot, nick, change):
+    rep = get_rep(bot, nick)
+    rep += change
+    set_rep(bot, nick, rep)
+    return rep
