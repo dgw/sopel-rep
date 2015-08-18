@@ -18,6 +18,9 @@ def luv(bot, trigger):
         bot.reply("No narcissism allowed!")
         return
     rep = mod_rep(bot, target, 1)
+    if target.lower() not in bot.privileges[trigger.sender.lower()]:
+        bot.reply("You can only luv someone who is here.")
+        return
     bot.say("%s has increased %s's reputation score to %d." % (trigger.nick, target, rep))
 
 
@@ -33,6 +36,9 @@ def h8(bot, trigger):
         bot.reply("Go to 4chan if you really hate yourself!")
         return
     rep = mod_rep(bot, target, -1)
+    if target.lower() not in bot.privileges[trigger.sender.lower()]:
+        bot.reply("You can only h8 someone who is here.")
+        return
     bot.say("%s has decreased %s's reputation score to %d." % (trigger.nick, target, rep))
 
 
