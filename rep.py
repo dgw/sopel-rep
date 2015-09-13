@@ -50,10 +50,7 @@ def h8(bot, trigger):
 @module.commands('rep')
 @module.example(".rep johnnytwothumbs")
 def rep(bot, trigger):
-    if not trigger.group(3):
-        bot.reply("No user specified.")
-        return
-    target = trigger.group(3)
+    target = trigger.group(3) or trigger.nick
     rep = get_rep(bot, target)
     if not rep:
         bot.say("%s has no reputation score yet." % target)
