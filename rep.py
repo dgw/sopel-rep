@@ -52,7 +52,7 @@ def h8(bot, trigger):
 def rep(bot, trigger):
     target = trigger.group(3) or trigger.nick
     rep = get_rep(bot, target)
-    if not rep:
+    if rep is None:
         bot.say("%s has no reputation score yet." % target)
         return
     bot.say("%s's current reputation score is %d." % (target, rep))
@@ -60,7 +60,7 @@ def rep(bot, trigger):
 
 # helpers
 def get_rep(bot, target):
-    return bot.db.get_nick_value(target, 'rep_score') or 0
+    return bot.db.get_nick_value(target, 'rep_score')
 
 
 def set_rep(bot, caller, target, newrep):
