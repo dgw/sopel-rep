@@ -49,7 +49,7 @@ def h8(bot, trigger):
 
 @module.commands('rep')
 @module.example(".rep johnnytwothumbs")
-def rep(bot, trigger):
+def show_rep(bot, trigger):
     target = trigger.group(3) or trigger.nick
     rep = get_rep(bot, target)
     if rep is None:
