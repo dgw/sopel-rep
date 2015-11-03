@@ -69,7 +69,7 @@ def set_rep(bot, caller, target, newrep):
 
 
 def mod_rep(bot, caller, target, change):
-    rep = get_rep(bot, target)
+    rep = get_rep(bot, target) or 0
     rep += change
     set_rep(bot, caller, target, rep)
     return rep
