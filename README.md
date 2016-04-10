@@ -1,9 +1,9 @@
-# willie-rep
+# sopel-rep
 Lets users "luv" and "h8" other users on IRC. Clone of a mIRC script someone
 used in a channel I was in.
 
 ## Dependencies
-Aside from willie and its dependencies, this module has no dependencies.
+Aside from sopel and its dependencies, this module has no dependencies.
 (`time` is part of the standard Python library.)
 
 ## Commands

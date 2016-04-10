@@ -1,9 +1,9 @@
 """
-rep.py - willie/sopel-compatible clone of a mIRC script
-Copyright 2015 dgw
+rep.py - sopel-compatible clone of a mIRC script
+Copyright 2015-2016 dgw
 """
 
-from willie import module
+from sopel import module
 import time
 
 TIMEOUT = 3600
