@@ -11,6 +11,7 @@ TIMEOUT = 3600
 
 @module.commands('luv')
 @module.example(".luv johnnytwothumbs")
+@module.require_chanmsg("You may only modify someone's rep in a channel.")
 def luv(bot, trigger):
     if not trigger.group(3):
         bot.reply("No user specified.")
@@ -30,6 +31,7 @@ def luv(bot, trigger):
 
 @module.commands('h8')
 @module.example(".h8 johnnytwothumbs")
+@module.require_chanmsg("You may only modify someone's rep in a channel.")
 def h8(bot, trigger):
     if not trigger.group(3):
         bot.reply("No user specified.")
