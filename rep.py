@@ -4,6 +4,7 @@ Copyright 2015-2016 dgw
 """
 
 from sopel import module
+from sopel.tools import Identifier
 import time
 
 TIMEOUT = 3600
@@ -16,7 +17,7 @@ def luv(bot, trigger):
     if not trigger.group(3):
         bot.reply("No user specified.")
         return
-    target = trigger.group(3)
+    target = Identifier(trigger.group(3))
     if target == trigger.nick:
         bot.reply("No narcissism allowed!")
         return
@@ -36,7 +37,7 @@ def h8(bot, trigger):
     if not trigger.group(3):
         bot.reply("No user specified.")
         return
-    target = trigger.group(3)
+    target = Identifier(trigger.group(3))
     if target == trigger.nick:
         bot.reply("Go to 4chan if you really hate yourself!")
         return
@@ -62,12 +63,12 @@ def show_rep(bot, trigger):
 
 # helpers
 def get_rep(bot, target):
-    return bot.db.get_nick_value(target, 'rep_score')
+    return bot.db.get_nick_value(Identifier(target), 'rep_score')
 
 
 def set_rep(bot, caller, target, newrep):
-    bot.db.set_nick_value(target, 'rep_score', newrep)
-    bot.db.set_nick_value(caller, 'rep_used', time.time())
+    bot.db.set_nick_value(Identifier(target), 'rep_score', newrep)
+    bot.db.set_nick_value(Identifier(caller), 'rep_used', time.time())
 
 
 def mod_rep(bot, caller, target, change):
@@ -78,11 +79,11 @@ def mod_rep(bot, caller, target, change):
 
 
 def get_rep_used(bot, nick):
-    return bot.db.get_nick_value(nick, 'rep_used') or 0
+    return bot.db.get_nick_value(Identifier(nick), 'rep_used') or 0
 
 
 def set_rep_used(bot, nick):
-    bot.db.set_nick_value(nick, 'rep_used', time.time())
+    bot.db.set_nick_value(Identifier(nick), 'rep_used', time.time())
 
 
 def rep_used_since(bot, nick):
