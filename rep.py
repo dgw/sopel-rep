@@ -72,9 +72,9 @@ def set_rep(bot, caller, target, newrep):
 
 
 def mod_rep(bot, caller, target, change):
-    rep = get_rep(bot, target) or 0
+    rep = get_rep(bot, Identifier(target)) or 0
     rep += change
-    set_rep(bot, caller, target, rep)
+    set_rep(bot, Identifier(caller), Identifier(target), rep)
     return rep
 
 
@@ -88,12 +88,12 @@ def set_rep_used(bot, nick):
 
 def rep_used_since(bot, nick):
     now = time.time()
-    last = get_rep_used(bot, nick)
+    last = get_rep_used(bot, Identifier(nick))
     return abs(last - now)
 
 
 def rep_too_soon(bot, nick):
-    since = rep_used_since(bot, nick)
+    since = rep_used_since(bot, Identifier(nick))
     if since < TIMEOUT:
         bot.notice("You must wait %d more seconds before changing someone's rep again." % (TIMEOUT - since), nick)
         return True
