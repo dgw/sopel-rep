@@ -18,7 +18,7 @@ def luv(bot, trigger):
         bot.reply("No user specified.")
         return
     target = Identifier(trigger.group(3))
-    if target == trigger.nick:
+    if is_self(bot, target, trigger.nick):
         bot.reply("No narcissism allowed!")
         return
     if target.lower() not in bot.privileges[trigger.sender.lower()]:
@@ -38,7 +38,7 @@ def h8(bot, trigger):
         bot.reply("No user specified.")
         return
     target = Identifier(trigger.group(3))
-    if target == trigger.nick:
+    if is_self(bot, target, trigger.nick):
         bot.reply("Go to 4chan if you really hate yourself!")
         return
     if target.lower() not in bot.privileges[trigger.sender.lower()]:
@@ -99,3 +99,16 @@ def rep_too_soon(bot, nick):
         return True
     else:
         return False
+
+
+def is_self(bot, nick, target):
+    nick = Identifier(nick)
+    target = Identifier(target)
+    if nick == target:
+        return True  # shortcut to catch common goofballs
+    try:
+        nick_id = bot.db.get_nick_id(nick, False)
+        target_id = bot.db.get_nick_id(target, False)
+    except ValueError:
+        return False  # if either nick doesn't have an ID, they can't be in a group
+    return nick_id == target_id
