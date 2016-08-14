@@ -10,7 +10,7 @@ import time
 TIMEOUT = 3600
 
 
-@module.rule('(</?3)\s+([a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32})')
+@module.rule('^(</?3)\s+([a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32})$')
 @module.require_chanmsg("You may only modify someone's rep in a channel.")
 def heart_cmd(bot, trigger):
     luv_h8(bot, trigger, trigger.group(2), 'h8' if '/' in trigger.group(1) else 'luv')
