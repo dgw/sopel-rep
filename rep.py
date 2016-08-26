@@ -10,44 +10,47 @@ import time
 TIMEOUT = 3600
 
 
-@module.commands('luv')
+@module.rule('^(</?3)\s+([a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32})$')
+@module.intent('ACTION')
+@module.require_chanmsg("You may only modify someone's rep in a channel.")
+def heart_cmd(bot, trigger):
+    luv_h8(bot, trigger, trigger.group(2), 'h8' if '/' in trigger.group(1) else 'luv')
+
+
+@module.commands('luv', 'h8')
 @module.example(".luv johnnytwothumbs")
+@module.example(".h8 d-bag")
 @module.require_chanmsg("You may only modify someone's rep in a channel.")
-def luv(bot, trigger):
+def luv_h8_cmd(bot, trigger):
     if not trigger.group(3):
         bot.reply("No user specified.")
         return
     target = Identifier(trigger.group(3))
-    if is_self(bot, target, trigger.nick):
-        bot.reply("No narcissism allowed!")
-        return
+    luv_h8(bot, trigger, target, trigger.group(1))
+
+
+def luv_h8(bot, trigger, target, which):
+    target = Identifier(target)
+    pfx = change = selfreply = None  # keep PyCharm & other linters happy
     if target.lower() not in bot.privileges[trigger.sender.lower()]:
-        bot.reply("You can only luv someone who is here.")
+        bot.reply("You can only %s someone who is here." % which)
         return
     if rep_too_soon(bot, trigger.nick):
         return
-    rep = mod_rep(bot, trigger.nick, target, 1)
-    bot.say("%s has increased %s's reputation score to %d." % (trigger.nick, target, rep))
-
-
-@module.commands('h8')
-@module.example(".h8 johnnytwothumbs")
-@module.require_chanmsg("You may only modify someone's rep in a channel.")
-def h8(bot, trigger):
-    if not trigger.group(3):
-        bot.reply("No user specified.")
+    if which == 'luv':
+        selfreply = "No narcissism allowed!"
+        pfx, change = 'in', 1
+    if which == 'h8':
+        selfreply = "Go to 4chan if you really hate yourself!"
+        pfx, change = 'de', -1
+    if not (pfx and change and selfreply):  # safeguard against leaving something in the above mass-None assignment
+        bot.say("Logic error! Please report this to %s." % bot.config.core.owner)
         return
-    target = Identifier(trigger.group(3))
-    if is_self(bot, target, trigger.nick):
-        bot.reply("Go to 4chan if you really hate yourself!")
+    if is_self(bot, trigger.nick, target):
+        bot.reply(selfreply)
         return
-    if target.lower() not in bot.privileges[trigger.sender.lower()]:
-        bot.reply("You can only h8 someone who is here.")
-        return
-    if rep_too_soon(bot, trigger.nick):
-        return
-    rep = mod_rep(bot, trigger.nick, target, -1)
-    bot.say("%s has decreased %s's reputation score to %d." % (trigger.nick, target, rep))
+    rep = mod_rep(bot, trigger.nick, target, change)
+    bot.say("%s has %screased %s's reputation score to %d" % (trigger.nick, pfx, target, rep))
 
 
 @module.commands('rep')
