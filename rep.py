@@ -10,7 +10,7 @@ import time
 TIMEOUT = 3600
 
 
-@module.rule('^(</?3)\s+([a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32})$')
+@module.rule('^(</?3)\s+([a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32})\s*$')
 @module.intent('ACTION')
 @module.require_chanmsg("You may only modify someone's rep in a channel.")
 def heart_cmd(bot, trigger):
