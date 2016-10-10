@@ -31,6 +31,7 @@ def luv_h8_cmd(bot, trigger):
 
 def luv_h8(bot, trigger, target, which):
     target = Identifier(target)
+    which = which.lower()  # issue #18
     pfx = change = selfreply = None  # keep PyCharm & other linters happy
     if target.lower() not in bot.privileges[trigger.sender.lower()]:
         bot.reply("You can only %s someone who is here." % which)
