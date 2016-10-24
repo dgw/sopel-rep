@@ -17,6 +17,12 @@ def heart_cmd(bot, trigger):
     luv_h8(bot, trigger, trigger.group(2), 'h8' if '/' in trigger.group(1) else 'luv')
 
 
+@module.rule('.*?(?:([a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32})(\+{2}|-{2})).*?')
+@module.require_chanmsg("You may only modify someone's rep in a channel.")
+def karma_cmd(bot, trigger):
+    luv_h8(bot, trigger, trigger.group(1), 'luv' if trigger.group(2) == '++' else 'h8', warn_nonexistent=False)
+
+
 @module.commands('luv', 'h8')
 @module.example(".luv johnnytwothumbs")
 @module.example(".h8 d-bag")
@@ -29,12 +35,13 @@ def luv_h8_cmd(bot, trigger):
     luv_h8(bot, trigger, target, trigger.group(1))
 
 
-def luv_h8(bot, trigger, target, which):
+def luv_h8(bot, trigger, target, which, warn_nonexistent=True):
     target = Identifier(target)
     which = which.lower()  # issue #18
     pfx = change = selfreply = None  # keep PyCharm & other linters happy
     if target.lower() not in bot.privileges[trigger.sender.lower()]:
-        bot.reply("You can only %s someone who is here." % which)
+        if warn_nonexistent:
+            bot.reply("You can only %s someone who is here." % which)
         return
     if rep_too_soon(bot, trigger.nick):
         return
