@@ -33,6 +33,8 @@ def luv_h8_cmd(bot, trigger):
         bot.reply("No user specified.")
         return
     target = Identifier(trigger.group(3))
+    if target != verified_nick(bot, target, trigger.sender):  # guard against double-processing karma_cmd() matches
+        return
     luv_h8(bot, trigger, target, trigger.group(1))
 
 
