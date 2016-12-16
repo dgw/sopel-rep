@@ -21,6 +21,9 @@ def heart_cmd(bot, trigger):
 @module.rule('.*?(?:([a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32})(\+{2}|-{2})).*?')
 @module.require_chanmsg("You may only modify someone's rep in a channel.")
 def karma_cmd(bot, trigger):
+    if re.match('^({prefix})({cmds})'.format(prefix=bot.config.core.prefix, cmds='|'.join(luv_h8_cmd.commands)),
+                trigger.group(0)):
+        return  # avoid processing commands if people try to be tricky
     luv_h8(bot, trigger, trigger.group(1), 'luv' if trigger.group(2) == '++' else 'h8', warn_nonexistent=False)
 
 
