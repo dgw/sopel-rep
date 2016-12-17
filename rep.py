@@ -36,7 +36,10 @@ def luv_h8_cmd(bot, trigger):
         bot.reply("No user specified.")
         return
     target = Identifier(trigger.group(3))
-    if target != verified_nick(bot, target, trigger.sender):  # guard against double-processing karma_cmd() matches
+    v_nick = verified_nick(bot, target, trigger.sender)
+    if not v_nick:
+        return
+    if target != v_nick:  # guard against double-processing karma_cmd() matches
         return
     luv_h8(bot, trigger, target, trigger.group(1))
 
@@ -133,6 +136,8 @@ def is_self(bot, nick, target):
 
 def verified_nick(bot, nick, channel):
     nick = re.search('([a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32})', nick).group(1)
+    if not nick:
+        return None
     nick = Identifier(nick)
     if nick.lower() not in bot.privileges[channel.lower()]:
         if nick.endswith('--'):
