@@ -6,6 +6,7 @@ Copyright 2015-2016 dgw
 from sopel import module
 from sopel.tools import Identifier
 import time
+import re
 
 TIMEOUT = 3600
 
@@ -20,6 +21,9 @@ def heart_cmd(bot, trigger):
 @module.rule('.*?(?:([a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32})(\+{2}|-{2})).*?')
 @module.require_chanmsg("You may only modify someone's rep in a channel.")
 def karma_cmd(bot, trigger):
+    if re.match('^({prefix})({cmds})'.format(prefix=bot.config.core.prefix, cmds='|'.join(luv_h8_cmd.commands)),
+                trigger.group(0)):
+        return  # avoid processing commands if people try to be tricky
     luv_h8(bot, trigger, trigger.group(1), 'luv' if trigger.group(2) == '++' else 'h8', warn_nonexistent=False)
 
 
@@ -36,10 +40,10 @@ def luv_h8_cmd(bot, trigger):
 
 
 def luv_h8(bot, trigger, target, which, warn_nonexistent=True):
-    target = Identifier(target)
+    target = verified_nick(bot, target, trigger.sender)
     which = which.lower()  # issue #18
     pfx = change = selfreply = None  # keep PyCharm & other linters happy
-    if target.lower() not in bot.privileges[trigger.sender.lower()]:
+    if not target:
         if warn_nonexistent:
             bot.reply("You can only %s someone who is here." % which)
         return
@@ -123,3 +127,16 @@ def is_self(bot, nick, target):
     except ValueError:
         return False  # if either nick doesn't have an ID, they can't be in a group
     return nick_id == target_id
+
+
+def verified_nick(bot, nick, channel):
+    nick = re.search('([a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32})', nick).group(1)
+    if not nick:
+        return None
+    nick = Identifier(nick)
+    if nick.lower() not in bot.privileges[channel.lower()]:
+        if nick.endswith('--'):
+            if Identifier(nick[:-2]).lower() in bot.privileges[channel.lower()]:
+                return Identifier(nick[:-2])
+        return None
+    return nick
