@@ -1,6 +1,6 @@
 """
 rep.py - sopel-compatible clone of a mIRC script
-Copyright 2015-2016 dgw
+Copyright 2015-2017 dgw
 """
 
 from sopel import module
