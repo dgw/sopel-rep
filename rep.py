@@ -24,7 +24,9 @@ def karma_cmd(bot, trigger):
     if re.match('^({prefix})({cmds})'.format(prefix=bot.config.core.prefix, cmds='|'.join(luv_h8_cmd.commands)),
                 trigger.group(0)):
         return  # avoid processing commands if people try to be tricky
-    luv_h8(bot, trigger, trigger.group(1), 'luv' if trigger.group(2) == '++' else 'h8', warn_nonexistent=False)
+    for (nick, act) in re.findall('(?:([a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32})(\+{2}|-{2}))', trigger.raw):
+        if luv_h8(bot, trigger, nick, 'luv' if act == '++' else 'h8', warn_nonexistent=False):
+            break
 
 
 @module.commands('luv', 'h8')
@@ -46,9 +48,9 @@ def luv_h8(bot, trigger, target, which, warn_nonexistent=True):
     if not target:
         if warn_nonexistent:
             bot.reply("You can only %s someone who is here." % which)
-        return
+        return False
     if rep_too_soon(bot, trigger.nick):
-        return
+        return False
     if which == 'luv':
         selfreply = "No narcissism allowed!"
         pfx, change = 'in', 1
@@ -60,9 +62,10 @@ def luv_h8(bot, trigger, target, which, warn_nonexistent=True):
         return
     if is_self(bot, trigger.nick, target):
         bot.reply(selfreply)
-        return
+        return False
     rep = mod_rep(bot, trigger.nick, target, change)
     bot.say("%s has %screased %s's reputation score to %d" % (trigger.nick, pfx, target, rep))
+    return True
 
 
 @module.commands('rep')
