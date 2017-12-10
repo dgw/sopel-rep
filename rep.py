@@ -135,11 +135,11 @@ def is_self(bot, nick, target):
 def verified_nick(bot, nick, channel):
     nick = re.search('([a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32})', nick).group(1)
     if not nick:
-        return None
+        return ''  # returning None would mean the returned value can't be compared with ==
     nick = Identifier(nick)
     if nick.lower() not in bot.privileges[channel.lower()]:
         if nick.endswith('--'):
             if Identifier(nick[:-2]).lower() in bot.privileges[channel.lower()]:
                 return Identifier(nick[:-2])
-        return None
+        return ''  # see above
     return nick
