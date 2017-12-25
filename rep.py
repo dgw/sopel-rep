@@ -45,13 +45,13 @@ def luv_h8(bot, trigger, target, which, warn_nonexistent=True):
     target = verified_nick(bot, target, trigger.sender)
     which = which.lower()  # issue #18
     pfx = change = selfreply = None  # keep PyCharm & other linters happy
-    command = which  # issue #29
-    try:  # because a simple "trigger.group('command') or which" doesn't work
-        command = trigger.group('command')  # also issue #29
-    except IndexError:
-        pass
     if not target:
         if warn_nonexistent:
+            command = which
+            try:  # because a simple "trigger.group('command') or which" doesn't work
+                command = trigger.group('command')
+            except IndexError:  # why can't you just return None, re.group()?
+                pass
             bot.reply("You can only %s someone who is here." % command)
         return False
     if rep_too_soon(bot, trigger.nick):
