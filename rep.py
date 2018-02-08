@@ -11,7 +11,7 @@ import re
 TIMEOUT = 3600
 
 
-@module.rule('^(</?3)\s+([a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32})\s*$')
+@module.rule('^(?P<command></?3)\s+([a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32})\s*$')
 @module.intent('ACTION')
 @module.require_chanmsg("You may only modify someone's rep in a channel.")
 def heart_cmd(bot, trigger):
@@ -47,7 +47,12 @@ def luv_h8(bot, trigger, target, which, warn_nonexistent=True):
     pfx = change = selfreply = None  # keep PyCharm & other linters happy
     if not target:
         if warn_nonexistent:
-            bot.reply("You can only %s someone who is here." % which)
+            command = which
+            try:  # because a simple "trigger.group('command') or which" doesn't work
+                command = trigger.group('command')
+            except IndexError:  # why can't you just return None, re.group()?
+                pass
+            bot.reply("You can only %s someone who is here." % command)
         return False
     if rep_too_soon(bot, trigger.nick):
         return False
