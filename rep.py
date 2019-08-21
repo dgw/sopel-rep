@@ -1,6 +1,6 @@
 """
 rep.py - sopel-compatible clone of a mIRC script
-Copyright 2015-2017 dgw
+Copyright 2015-2019 dgw
 """
 
 from sopel import module
@@ -68,6 +68,9 @@ def luv_h8(bot, trigger, target, which, warn_nonexistent=True):
     if is_self(bot, trigger.nick, target):
         bot.reply(selfreply)
         return False
+    if bot.db.get_nick_value(target, 'rep_locked'):
+        bot.reply("Sorry, %s's reputation has been locked by an admin." % target)
+        return False
     rep = mod_rep(bot, trigger.nick, target, change)
     bot.say("%s has %screased %s's reputation score to %d" % (trigger.nick, pfx, target, rep))
     return True
@@ -82,6 +85,22 @@ def show_rep(bot, trigger):
         bot.say("%s has no reputation score yet." % target)
         return
     bot.say("%s's current reputation score is %d." % (target, rep))
+
+
+@module.commands('replock', 'repunlock')
+@module.example('.replock BullyingVictim')
+@module.require_admin('Only bot admins may manage reputation locks')
+def manage_locks(bot, trigger):
+    target = trigger.group(3)
+    if not target:
+        bot.reply("I need a nickname!")
+        return
+    if 'un' in trigger.group(1):  # .repunlock command used
+        bot.db.set_nick_value(Identifier(target), 'rep_locked', False)
+        bot.say("Unlocked rep for %s." % target)
+    else:  # .replock command used
+        bot.db.set_nick_value(Identifier(target), 'rep_locked', True)
+        bot.say("Locked rep for %s." % target)
 
 
 # helpers
