@@ -4,7 +4,7 @@ Copyright 2015-2019 dgw
 """
 
 from sopel import module
-from sopel.tools import Identifier
+from sopel.tools import Identifier, time as time_tools
 import time
 import re
 
@@ -137,7 +137,7 @@ def rep_used_since(bot, nick):
 def rep_too_soon(bot, nick):
     since = rep_used_since(bot, nick)
     if since < TIMEOUT:
-        bot.notice("You must wait %d more seconds before changing someone's rep again." % (TIMEOUT - since), nick)
+        bot.notice("You can change someone's rep again %s." % time_tools.seconds_to_human(-(TIMEOUT - since)), nick)
         return True
     else:
         return False
