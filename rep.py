@@ -8,23 +8,24 @@ from sopel.tools import Identifier, time as time_tools
 import time
 import re
 
+r_nick = r'[a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32}'
 TIMEOUT = 3600
 
 
-@module.rule('^(?P<command></?3)\s+([a-zA-Z0-9\[\]\\\\`_\^\{\|\}-]{1,32})\s*$')
+@module.rule(r'^(?P<command></?3)\s+(%s)\s*$' % r_nick)
 @module.intent('ACTION')
 @module.require_chanmsg("You may only modify someone's rep in a channel.")
 def heart_cmd(bot, trigger):
     luv_h8(bot, trigger, trigger.group(2), 'h8' if '/' in trigger.group(1) else 'luv')
 
 
-@module.rule('.*?(?:([a-zA-Z0-9\[\]\\\\`_\^\{\|\}-]{1,32})(\+{2}|-{2})).*?')
+@module.rule(r'.*?(?:(%s)(\+{2}|-{2})).*?' % r_nick)
 @module.require_chanmsg("You may only modify someone's rep in a channel.")
 def karma_cmd(bot, trigger):
     if re.match('^({prefix})({cmds})'.format(prefix=bot.config.core.prefix, cmds='|'.join(luv_h8_cmd.commands)),
                 trigger.group(0)):
         return  # avoid processing commands if people try to be tricky
-    for (nick, act) in re.findall('(?:([a-zA-Z0-9\[\]\\\\`_\^\{\|\}-]{1,32})(\+{2}|-{2}))', trigger.raw):
+    for (nick, act) in re.findall(r'(?:(%s)(\+{2}|-{2}))' % r_nick, trigger.raw):
         if luv_h8(bot, trigger, nick, 'luv' if act == '++' else 'h8', warn_nonexistent=False):
             break
 
@@ -162,7 +163,7 @@ def verified_nick(bot, nick, channel):
         # and that means verification should immediately fail
         return ''  # not None; see below
 
-    nick = re.search('([a-zA-Z0-9\[\]\\\\`_\^\{\|\}-]{1,32})', nick).group(1)
+    nick = re.search(r_nick, nick).group(0)
     if not nick:
         return ''  # returning None would mean the returned value can't be compared with ==
     nick = Identifier(nick)
