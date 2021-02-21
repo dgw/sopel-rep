@@ -157,6 +157,11 @@ def is_self(bot, nick, target):
 
 
 def verified_nick(bot, nick, channel):
+    if not all([nick, channel]):
+        # `bot` is always going to be a thing, but `nick` or `channel` could be empty
+        # and that means verification should immediately fail
+        return ''  # not None; see below
+
     nick = re.search('([a-zA-Z0-9\[\]\\\\`_\^\{\|\}-]{1,32})', nick).group(1)
     if not nick:
         return ''  # returning None would mean the returned value can't be compared with ==
