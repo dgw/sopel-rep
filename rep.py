@@ -1,6 +1,6 @@
 """
-rep.py - sopel-compatible clone of a mIRC script
-Copyright 2015-2019 dgw
+rep.py - Sopel-compatible clone of a mIRC karma script
+Copyright 2015-2021 dgw
 """
 
 from sopel import module
