@@ -69,11 +69,13 @@ def luv_h8(bot, trigger, target, which, warn_nonexistent=True):
     if is_self(bot, trigger.nick, target):
         bot.reply(selfreply)
         return False
+
+    possessive = 'my' if target == bot.nick else target + "'s"
     if bot.db.get_nick_value(target, 'rep_locked'):
-        bot.reply("Sorry, %s's reputation has been locked by an admin." % target)
+        bot.reply("Sorry, %s reputation has been locked by an admin." % possessive)
         return False
     rep = mod_rep(bot, trigger.nick, target, change)
-    bot.say("%s has %screased %s's reputation score to %d" % (trigger.nick, pfx, target, rep))
+    bot.say("%s has %screased %s reputation score to %d" % (trigger.nick, pfx, possessive, rep))
     return True
 
 
