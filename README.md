@@ -4,8 +4,7 @@ someone used in a channel I was in. (Never saw their code, not that I'd want to
 do a *port* of anything written for mIRC...)
 
 ## Dependencies
-Aside from sopel and its dependencies, this module has no dependencies.
-(`time` is part of the standard Python library.)
+Sopel version 7.1 or higher
 
 ## Usage
 ### Commands

@@ -1,9 +1,9 @@
 """
 rep.py - Sopel-compatible clone of a mIRC karma script
-Copyright 2015-2021 dgw
+Copyright 2015-2022 dgw
 """
 
-from sopel import module
+from sopel import plugin
 from sopel.tools import Identifier, time as time_tools
 import time
 import re
@@ -12,15 +12,15 @@ r_nick = r'[a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32}'
 TIMEOUT = 3600
 
 
-@module.rule(r'^(?P<command></?3)\s+(%s)\s*$' % r_nick)
-@module.intent('ACTION')
-@module.require_chanmsg("You may only modify someone's rep in a channel.")
+@plugin.rule(r'^(?P<command></?3)\s+(%s)\s*$' % r_nick)
+@plugin.intent('ACTION')
+@plugin.require_chanmsg("You may only modify someone's rep in a channel.")
 def heart_cmd(bot, trigger):
     luv_h8(bot, trigger, trigger.group(2), 'h8' if '/' in trigger.group(1) else 'luv')
 
 
-@module.rule(r'.*?(?:(%s)(\+{2}|-{2})).*?' % r_nick)
-@module.require_chanmsg("You may only modify someone's rep in a channel.")
+@plugin.rule(r'.*?(?:(%s)(\+{2}|-{2})).*?' % r_nick)
+@plugin.require_chanmsg("You may only modify someone's rep in a channel.")
 def karma_cmd(bot, trigger):
     if re.match('^({prefix})({cmds})'.format(prefix=bot.config.core.prefix, cmds='|'.join(luv_h8_cmd.commands)),
                 trigger.group(0)):
@@ -30,10 +30,10 @@ def karma_cmd(bot, trigger):
             break
 
 
-@module.commands('luv', 'h8')
-@module.example(".luv johnnytwothumbs")
-@module.example(".h8 d-bag")
-@module.require_chanmsg("You may only modify someone's rep in a channel.")
+@plugin.commands('luv', 'h8')
+@plugin.example(".luv johnnytwothumbs")
+@plugin.example(".h8 d-bag")
+@plugin.require_chanmsg("You may only modify someone's rep in a channel.")
 def luv_h8_cmd(bot, trigger):
     if not trigger.group(3):
         bot.reply("No user specified.")
@@ -79,8 +79,8 @@ def luv_h8(bot, trigger, target, which, warn_nonexistent=True):
     return True
 
 
-@module.commands('rep')
-@module.example(".rep johnnytwothumbs")
+@plugin.commands('rep')
+@plugin.example(".rep johnnytwothumbs")
 def show_rep(bot, trigger):
     target = trigger.group(3) or trigger.nick
     rep = get_rep(bot, target)
@@ -90,9 +90,9 @@ def show_rep(bot, trigger):
     bot.say("%s's current reputation score is %d." % (target, rep))
 
 
-@module.commands('replock', 'repunlock')
-@module.example('.replock BullyingVictim')
-@module.require_admin('Only bot admins may manage reputation locks')
+@plugin.commands('replock', 'repunlock')
+@plugin.example('.replock BullyingVictim')
+@plugin.require_admin('Only bot admins may manage reputation locks')
 def manage_locks(bot, trigger):
     target = trigger.group(3)
     if not target:
