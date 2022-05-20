@@ -7,7 +7,15 @@ do a *port* of anything written for mIRC...)
 Aside from sopel and its dependencies, this module has no dependencies.
 (`time` is part of the standard Python library.)
 
-## Commands
+## Usage
+### Commands
 * `.luv nick`: Adds +1 to the user's reputation score
 * `.h8 nick`: Adds -1 to the user's reputation score
 
+### Actions
+* `/me <3 nick`: Adds +1 to the user's reputation score
+* `/me </3 nick`: Adds -1 to the user's reputation score
+
+### Inline karma
+* `nick++` anywhere in a message adds +1 to the user's reputation score
+* `nick--` anywhere in a message adds -1 to the user's reputation score
