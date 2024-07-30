@@ -1,12 +1,17 @@
+"""sopel-rep
+
+Karma plugin for Sopel IRC bots, cloning the behavior of an old mIRC script.
+
+Copyright 2015-2024 dgw
 """
-rep.py - Sopel-compatible clone of a mIRC karma script
-Copyright 2015-2022 dgw
-"""
+from __future__ import annotations
+
+import re
+import time
 
 from sopel import plugin
 from sopel.tools import Identifier, time as time_tools
-import time
-import re
+
 
 r_nick = r'[a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32}'
 TIMEOUT = 3600
