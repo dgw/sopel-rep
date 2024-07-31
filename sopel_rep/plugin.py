@@ -18,7 +18,7 @@ TIMEOUT = 3600
 
 
 @plugin.rule(r'^(?P<command></?3)\s+(%s)\s*$' % r_nick)
-@plugin.intent('ACTION')
+@plugin.ctcp('ACTION')
 @plugin.require_chanmsg("You may only modify someone's rep in a channel.")
 def heart_cmd(bot, trigger):
     luv_h8(bot, trigger, trigger.group(2), 'h8' if '/' in trigger.group(1) else 'luv')
