@@ -18,7 +18,7 @@ TIMEOUT = 3600
 
 
 @plugin.rule(r'^(?P<command></?3)\s+(%s)\s*$' % r_nick)
-@plugin.intent('ACTION')
+@plugin.ctcp('ACTION')
 @plugin.require_chanmsg("You may only modify someone's rep in a channel.")
 def heart_cmd(bot, trigger):
     luv_h8(bot, trigger, trigger.group(2), 'h8' if '/' in trigger.group(1) else 'luv')
@@ -173,10 +173,9 @@ def verified_nick(bot, nick, channel):
     nick = re.search(r_nick, nick).group(0)
     if not nick:
         return ''  # returning None would mean the returned value can't be compared with ==
-    nick = Identifier(nick)
-    if nick.lower() not in bot.privileges[channel.lower()]:
+    if nick not in bot.channels[channel].users:
         if nick.endswith('--'):
-            if Identifier(nick[:-2]).lower() in bot.privileges[channel.lower()]:
+            if nick[:-2] in bot.channels[channel].users:
                 return Identifier(nick[:-2])
         return ''  # see above
-    return nick
+    return Identifier(nick)
