@@ -20,6 +20,18 @@ Releases are hosted on PyPI, so after installing Sopel, all you need is `pip`:
 $ pip install sopel-rep
 ```
 
+## Configuring
+
+The easiest way to configure `sopel-rep` is via Sopel's configuration
+wizard—simply run `sopel-plugins configure rep` and enter the values for which
+it prompts you. Settings are described below:
+
+* `cooldown`: How long in seconds each user must wait after changing anyone's
+  rep before they are permitted to do so again.\
+  _Default: 3600_
+* `admin_cooldown`: Whether the bot's owner & admins must obey the cooldown.\
+  _Default: true_
+
 ## Usage
 ### Commands
 * `.luv nick`: Adds +1 to the user's reputation score
