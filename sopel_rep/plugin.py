@@ -10,11 +10,27 @@ import re
 import time
 
 from sopel import plugin
+from sopel.config.types import StaticSection, ValidatedAttribute
 from sopel.tools import Identifier, time as time_tools
 
 
 r_nick = r'[a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32}'
-TIMEOUT = 3600
+
+
+class RepSection(StaticSection):
+    cooldown = ValidatedAttribute('cooldown', int, default=3600)
+
+
+def setup(bot):
+    bot.config.define_section('rep', RepSection)
+
+
+def configure(config):
+    config.define_section('rep', RepSection)
+    config.rep.configure_setting(
+        'cooldown',
+        "How often should users be allowed to change someone's rep, in seconds?",
+    )
 
 
 @plugin.rule(r'^(?P<command></?3)\s+(%s)\s*$' % r_nick)
@@ -144,8 +160,9 @@ def rep_used_since(bot, nick):
 
 def rep_too_soon(bot, nick):
     since = rep_used_since(bot, nick)
-    if since < TIMEOUT:
-        bot.notice("You can change someone's rep again %s." % time_tools.seconds_to_human(-(TIMEOUT - since)), nick)
+    cooldown = bot.settings.rep.cooldown
+    if since < cooldown:
+        bot.notice("You can change someone's rep again %s." % time_tools.seconds_to_human(-(cooldown - since)), nick)
         return True
     else:
         return False
