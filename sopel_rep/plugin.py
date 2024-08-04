@@ -6,8 +6,8 @@ Copyright 2015-2024 dgw
 """
 from __future__ import annotations
 
+from datetime import datetime
 import re
-import time
 
 from sopel import plugin
 from sopel.config.types import BooleanAttribute, StaticSection, ValidatedAttribute
@@ -83,7 +83,7 @@ def luv_h8(bot, trigger, target, which, warn_nonexistent=True):
         return False
     if (
         not (trigger.admin and not bot.settings.rep.admin_cooldown)
-        and rep_too_soon(bot, trigger.nick)
+        and rep_too_soon(bot, trigger.nick, trigger.time)
     ):
         return False
     if which == 'luv':
@@ -103,7 +103,7 @@ def luv_h8(bot, trigger, target, which, warn_nonexistent=True):
     if bot.db.get_nick_value(target, 'rep_locked'):
         bot.reply("Sorry, %s reputation has been locked by an admin." % possessive)
         return False
-    rep = mod_rep(bot, trigger.nick, target, change)
+    rep = mod_rep(bot, trigger.nick, target, change, trigger.time)
     bot.say("%s has %screased %s reputation score to %d" % (trigger.nick, pfx, possessive, rep))
     return True
 
@@ -140,34 +140,37 @@ def get_rep(bot, target):
     return bot.db.get_nick_value(Identifier(target), 'rep_score')
 
 
-def set_rep(bot, caller, target, newrep):
+def set_rep(bot, target, newrep):
     bot.db.set_nick_value(Identifier(target), 'rep_score', newrep)
-    bot.db.set_nick_value(Identifier(caller), 'rep_used', time.time())
 
 
-def mod_rep(bot, caller, target, change):
+def mod_rep(bot, caller, target, change, dt):
     rep = get_rep(bot, target) or 0
     rep += change
-    set_rep(bot, caller, target, rep)
+    set_rep(bot, target, rep)
+    set_rep_used(bot, caller, dt)
     return rep
 
 
 def get_rep_used(bot, nick):
-    return bot.db.get_nick_value(Identifier(nick), 'rep_used') or 0
+    return (
+        datetime.fromtimestamp(
+            bot.db.get_nick_value(Identifier(nick), 'rep_used') or 0
+        )
+    )
 
 
-def set_rep_used(bot, nick):
-    bot.db.set_nick_value(Identifier(nick), 'rep_used', time.time())
+def set_rep_used(bot, nick, dt):
+    bot.db.set_nick_value(Identifier(nick), 'rep_used', dt.timestamp())
 
 
-def rep_used_since(bot, nick):
-    now = time.time()
+def rep_used_since(bot, nick, when):
     last = get_rep_used(bot, nick)
-    return abs(last - now)
+    return abs(last - when)
 
 
-def rep_too_soon(bot, nick):
-    since = rep_used_since(bot, nick)
+def rep_too_soon(bot, nick, when):
+    since = rep_used_since(bot, nick, when)
     cooldown = bot.settings.rep.cooldown
     if since < cooldown:
         bot.notice("You can change someone's rep again %s." % time_tools.seconds_to_human(-(cooldown - since)), nick)
