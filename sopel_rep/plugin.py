@@ -10,11 +10,32 @@ import re
 import time
 
 from sopel import plugin
+from sopel.config.types import BooleanAttribute, StaticSection, ValidatedAttribute
 from sopel.tools import Identifier, time as time_tools
 
 
 r_nick = r'[a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32}'
-TIMEOUT = 3600
+
+
+class RepSection(StaticSection):
+    cooldown = ValidatedAttribute('cooldown', int, default=3600)
+    admin_cooldown = BooleanAttribute('admin_cooldown', default=True)
+
+
+def setup(bot):
+    bot.config.define_section('rep', RepSection)
+
+
+def configure(config):
+    config.define_section('rep', RepSection)
+    config.rep.configure_setting(
+        'cooldown',
+        "How often should users be allowed to change someone's rep, in seconds?",
+    )
+    config.rep.configure_setting(
+        'admin_cooldown',
+        "Should bot admins also have to obey that cooldown?",
+    )
 
 
 @plugin.rule(r'^(?P<command></?3)\s+(%s)\s*$' % r_nick)
@@ -60,7 +81,10 @@ def luv_h8(bot, trigger, target, which, warn_nonexistent=True):
                 pass
             bot.reply("You can only %s someone who is here." % command)
         return False
-    if rep_too_soon(bot, trigger.nick):
+    if (
+        not (trigger.admin and not bot.settings.rep.admin_cooldown)
+        and rep_too_soon(bot, trigger.nick)
+    ):
         return False
     if which == 'luv':
         selfreply = "No narcissism allowed!"
@@ -144,8 +168,9 @@ def rep_used_since(bot, nick):
 
 def rep_too_soon(bot, nick):
     since = rep_used_since(bot, nick)
-    if since < TIMEOUT:
-        bot.notice("You can change someone's rep again %s." % time_tools.seconds_to_human(-(TIMEOUT - since)), nick)
+    cooldown = bot.settings.rep.cooldown
+    if since < cooldown:
+        bot.notice("You can change someone's rep again %s." % time_tools.seconds_to_human(-(cooldown - since)), nick)
         return True
     else:
         return False
