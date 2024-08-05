@@ -22,10 +22,12 @@ class RepSection(StaticSection):
 
 
 def setup(bot):
-    global MANAGER
-
     bot.config.define_section('rep', RepSection)
-    MANAGER = RepManager(bot)
+    bot.memory['rep_manager'] = RepManager(bot)
+
+
+def shutdown(bot):
+    del bot.memory['rep_manager']
 
 
 def configure(config):
@@ -72,7 +74,7 @@ def luv_h8_cmd(bot, trigger):
 
 def luv_h8(bot, trigger, target, which, warn_nonexistent=True):
     try:
-        message = MANAGER.luv_or_h8(trigger, target, which)
+        message = bot.memory['rep_manager'].luv_or_h8(trigger, target, which)
     except NonexistentNickError as err:
         if warn_nonexistent:
             bot.reply(str(err))
@@ -96,7 +98,7 @@ def luv_h8(bot, trigger, target, which, warn_nonexistent=True):
 @plugin.example(".rep johnnytwothumbs")
 def show_rep(bot, trigger):
     target = trigger.group(3) or trigger.nick
-    rep = MANAGER.get_rep(target)
+    rep = bot.memory['rep_manager'].get_rep(target)
     if rep is None:
         bot.say("%s has no reputation score yet." % target)
         return
@@ -112,8 +114,8 @@ def manage_locks(bot, trigger):
         bot.reply("I need a nickname!")
         return
     if 'unlock' in trigger.group(1):  # .repunlock command used
-        MANAGER.unlock_rep(target)
+        bot.memory['rep_manager'].unlock_rep(target)
         bot.say("Unlocked rep for %s." % target)
     else:  # .replock command used
-        MANAGER.lock_rep(target)
+        bot.memory['rep_manager'].lock_rep(target)
         bot.say("Locked rep for %s." % target)
