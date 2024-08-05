@@ -14,7 +14,7 @@ from sopel.config.types import BooleanAttribute, StaticSection, ValidatedAttribu
 from sopel.tools import Identifier, time as time_tools
 
 
-r_nick = r'[a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,32}'
+r_nick = r'[a-zA-Z\[\]\\`_\^\{\|\}-][a-zA-Z0-9\[\]\\`_\^\{\|\}-]{1,31}'
 
 
 class RepSection(StaticSection):
@@ -45,13 +45,13 @@ def heart_cmd(bot, trigger):
     luv_h8(bot, trigger, trigger.group(2), 'h8' if '/' in trigger.group(1) else 'luv')
 
 
-@plugin.rule(r'.*?(?:(%s)(\+{2}|-{2})).*?' % r_nick)
+@plugin.search(r'(%s)(\+{2}|-{2})' % r_nick)
 @plugin.require_chanmsg("You may only modify someone's rep in a channel.")
 def karma_cmd(bot, trigger):
     if re.match('^({prefix})({cmds})'.format(prefix=bot.config.core.prefix, cmds='|'.join(luv_h8_cmd.commands)),
                 trigger.group(0)):
         return  # avoid processing commands if people try to be tricky
-    for (nick, act) in re.findall(r'(?:(%s)(\+{2}|-{2}))' % r_nick, trigger.raw):
+    for (nick, act) in re.findall(r'(%s)(\+{2}|-{2})' % r_nick, trigger.raw):
         if luv_h8(bot, trigger, nick, 'luv' if act == '++' else 'h8', warn_nonexistent=False):
             break
 
