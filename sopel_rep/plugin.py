@@ -16,6 +16,9 @@ from .errors import ArgumentError, CooldownError, NonexistentNickError
 from .manager import RepManager, r_nick
 
 
+KARMA_INLINE = r'(%s)(\+{2}|-{2})' % r_nick
+
+
 class RepSection(StaticSection):
     cooldown = ValidatedAttribute('cooldown', int, default=3600)
     admin_cooldown = BooleanAttribute('admin_cooldown', default=True)
@@ -49,13 +52,13 @@ def heart_cmd(bot, trigger):
     luv_h8(bot, trigger, trigger.group(2), 'h8' if '/' in trigger.group(1) else 'luv')
 
 
-@plugin.rule(r'.*?(?:(%s)(\+{2}|-{2})).*?' % r_nick)
+@plugin.search(KARMA_INLINE)
 @plugin.require_chanmsg("You may only modify someone's rep in a channel.")
 def karma_cmd(bot, trigger):
     if re.match('^({prefix})({cmds})'.format(prefix=bot.config.core.prefix, cmds='|'.join(luv_h8_cmd.commands)),
                 trigger.group(0)):
         return  # avoid processing commands if people try to be tricky
-    for (nick, act) in re.findall(r'(?:(%s)(\+{2}|-{2}))' % r_nick, trigger.raw):
+    for (nick, act) in re.findall(KARMA_INLINE, trigger.raw):
         if luv_h8(bot, trigger, nick, 'luv' if act == '++' else 'h8', warn_nonexistent=False):
             break
 
