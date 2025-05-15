@@ -1,5 +1,15 @@
 ## Changelog
 
+### 1.2.0
+
+Changed:
+* Require Sopel 8+ and Python 3.8+ (#42)
+
+Internal:
+* Refactor the code to unify helpers into a "manager" class (#42, #44)
+* Use newer Sopel decorator features to simplify searching for inline `++`/`--` commands (#43)
+
+
 ### 1.1.0
 
 Added:
