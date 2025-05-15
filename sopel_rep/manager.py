@@ -40,7 +40,7 @@ class RepManager:
         return self.sopel.settings.rep
 
     def get_rep(self, nick: str) -> int:
-        return self.sopel.db.get_nick_value(nick, self.SCORE_KEY)
+        return self.sopel.db.get_nick_value(nick, self.SCORE_KEY) or 0
 
     def set_rep(self, nick: str, value: int):
         self.sopel.db.set_nick_value(nick, self.SCORE_KEY, value)
